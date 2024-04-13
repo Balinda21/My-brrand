@@ -681,7 +681,7 @@ app.delete('/api/blogs/delete/:id', async (req, res) => {
         if (!deletedBlog) {
             return res.status(404).json({ message: 'Blog not found' });
         }
-        res.status(200).json({ message: 'Blog deleted successfully' });
+        res.status(204).send();
     }
     catch (error) {
         console.error('Error deleting blog:', error);
