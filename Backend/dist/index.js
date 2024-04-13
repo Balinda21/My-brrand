@@ -132,7 +132,7 @@ app.get('/loggin', (req, res) => {
     const indexPath = path.resolve(__dirname, '../../Frontend/login.html');
     res.sendFile(indexPath);
 });
-app.get('/singleblog', (req, res) => {
+app.get('/singleblog/:id', (req, res) => {
     const indexPath = path.resolve(__dirname, '../../Frontend/singleblog.html');
     res.sendFile(indexPath);
 });

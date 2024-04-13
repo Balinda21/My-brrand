@@ -117,33 +117,39 @@
             <h3 class="farmie">
               <span class="far">Mau</span>rice.
             </h3>
-            <nav class="nav">
-                <a href="/">Home</a>
-                <a href="/about">About</a>
-                <a href="/projecter">Projects</a>
-                <a href="/blogger">Blog</a>
-                <a href="/contactor">Contact</a>
-            </nav>            
-            <a href="/loggin" id="login-btn">
-              Login
-            </a>
+            <nav class="nav">   
+              <a href="/">Home</a>
+              <a href="/about">About</a>
+              <a href="/projecter">Projects</a>
+              <a href="/blogger">Blog</a>
+              <a href="/contactor">Contact</a>
+               <div class="dropdown" id="dropdown" > 
+            </div>
+            </nav>   
+            <div id="logger">
+                
+            </div>         
             <button id="nav-toggle" class="nav-btn">
               <i class="fa fa-bars"></i>
             </button>
+
+           
             
           </header>
           
-      </div>
-    <!-- Blog section -->
+      </div>    <!-- Blog section -->
     <div class="blog-section">
+
         <div class="blog-card">
-            <img src="./assets/images/man.jpg" alt="Blog Image">
+            <div id="contentImage">
+            </div>
             <div class="card-content">
-                <h2>Artificial intelligence</h2>
-                <span class="card-date">January 1, 2022</span>
-                <p>AI is a tool created and controlled by humans. While AI technologies continue to advance rapidly and play </p>
+                <div id="contentBlog">
+                   
+                </div>
+                
                 <div class="like-comment-section">
-                    <i><img id="likeIcon" src="./assets/images/heart.png" alt="" style="width: 20px; cursor: pointer;" onclick="toggleLike()"></i>
+                    <i><img id="likeIcon" src="/assets/images/heart.png" alt="" style="width: 20px; cursor: pointer;" onclick="toggleLike()"></i>
                     <span id="likeCount">0</span>
                 </div>
                 <!-- Comment section -->
@@ -177,8 +183,30 @@
     const loginButton = document.getElementById("login-btn");
     const commentForm = document.querySelector(".comment-form");
     const commentsContainer = document.querySelector(".comments");
+    const contentImage= document.getElementById("contentImage");
+    const contentBlog= document.getElementById("contentBlog");
 
 
+    const id = window.location.pathname.split('/').pop()
+     
+    fetch(`/api/singleblogs/${id}`, {credentials: "include"})
+    .then(res => res.json())
+    .then(data => {
+    
+        if(data){
+            contentImage.innerHTML = `
+            <img src="${data.picture}" alt="Blog Image">
+            `
+            contentBlog.innerHTML = `
+            <h2>${data.title}</h2>
+                    <span class="card-date">${data.date}</span>
+                    <p>${data.description} </p> 
+            `
+        }
+
+
+    })
+    .catch(error => console.log(error))
     
 
     // Function to fetch comments and display them
@@ -202,38 +230,16 @@
         }
     }
 
-    // Function to get cookie by name
-    function getCookie(name) {
-        const cookies = document.cookie.split(";")
-            .map(cookie => cookie.trim().split("="))
-            .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
-        return cookies[name];
-    }
-
-    if (loginButton) {
-        const token = getCookie("token");
-
-        if (token) {
-            loginButton.textContent = "Logout";
-            loginButton.addEventListener("click", function() {
-                document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                window.location.href = "/login";
-            });
-        } else {
-            loginButton.textContent = "Login";
-            loginButton.href = "/loggin";
-        }
 
         // Fetch and display comments when the page loads
         await fetchAndDisplayComments();
 
-        // Add event listener to comment form submit button
         commentForm.addEventListener("submit", async function(event) {
             event.preventDefault(); // Prevent default form submission
 
             const commentText = commentForm.querySelector("textarea").value.trim();
 
-            
+            let token
 
             if (commentText !== "") {
                 if (!token) {
@@ -251,8 +257,7 @@
 
                         if (response.ok) {
                             alert("Comment submitted successfully!");
-                            commentForm.reset(); // Clear form fields on successful submission
-                            // After successfully submitting a comment, fetch and display updated comments
+                            commentForm.reset(); 
                             await fetchAndDisplayComments();
                         } else {
                             alert("Failed to submit comment. Please try again later.");
@@ -269,12 +274,10 @@
                 alert("Please enter a valid comment.");
             }
         });
-    } else {
-        console.error("Login button not found!");
-    }
+    
 });
 </script>
-
+<!-- likes  -->
 <script>
     let likeCount = 0;
     let isLiked = false;
@@ -294,6 +297,58 @@
         likeCountElement.textContent = likeCount;
         likeIcon.classList.toggle("liked", isLiked);
     }
+
+// web manipulation for admin
+    const admin = document.getElementById("dropdown")
+const loggContext = document.getElementById("logger")
+
+
+
+const updateUserUi = (user) => {
+        if (user && user.name) {
+            if (user.isAdmin === true) {
+                admin.innerHTML = `
+        <li onclick="toggleDropdown()" class="dropbtn">Menu</li>
+                <div id="dropdown-menu" class="dropdown-content">
+                    <a href="/administrator">Dashboard</a>
+                </div>`
+            } else {
+                admin.innerHTML = '';
+            }
+              loggContext.innerHTML = ` 
+    <a href="/logout" id="logout" class="login_button">Logout</a>
+    `
+        } else {
+            loggContext.innerHTML = `
+    <a href="/loggin" id="login-btn" class="login_button">Login</a>
+
+    `
+            admin.innerHTML = ''; 
+        }
+    };
+
+ fetch('/api/user', {credentials:"include"})
+ .then(res => res.json())
+ .then(data => {updateUserUi(data)})
+ .catch(error => console.log(error))
+
+ document.addEventListener('click', async (e) => {
+        if (e.target.id === 'logout') {
+            e.preventDefault();
+            try {
+                await fetch('/logout', {
+                    method: 'POST', 
+                    credentials: 'include' 
+                });
+                updateUserUi(null); 
+                location.assign('/loggin')
+            } catch (error) {
+                console.error('Error logging out:', error);
+            }
+        }
+    });
+
 </script>
+
 </body>
 </html>
