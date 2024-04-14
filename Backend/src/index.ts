@@ -99,7 +99,7 @@ mongoose.connect('mongodb+srv://balinda:Famillyy123@cluster0.8izzdgk.mongodb.net
 
     const spacs = swaggerjsdoc(options)
     app.use(
-      '/endpoints-docs',
+      '/backend-docs',
       swaggerui.serve,
       swaggerui.setup(spacs)
 

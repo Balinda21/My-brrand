@@ -88,7 +88,7 @@ const options = {
 mongoose.connect('mongodb+srv://balinda:Famillyy123@cluster0.8izzdgk.mongodb.net/Tasks')
     .then(() => {
     const spacs = swaggerjsdoc(options);
-    app.use('/endpoints-docs', swaggerui.serve, swaggerui.setup(spacs));
+    app.use('/backend-docs', swaggerui.serve, swaggerui.setup(spacs));
     console.log('Connected to database');
 })
     .catch((error) => console.log(error));
