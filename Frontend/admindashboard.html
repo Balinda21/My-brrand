@@ -49,6 +49,11 @@
   </div>
 
   <div class="blog-cards-container" id="blog-cards-container"></div>
+  <div class="chart-container">
+  <div id="piechart" style="width: 800px; height: 500px;"></div>
+</div>
+
+
 
   <!-- Modal -->
   <div id="editModal" class="modal">
@@ -212,7 +217,39 @@ document.getElementById('editForm').addEventListener('submit', async function(ev
 
 
     });
+
+
+
   </script>
+
+
+<!-- pie chart -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+
+        var data = google.visualization.arrayToDataTable([
+          ['Task', 'Hours per Day'],
+          ['Blogs',     11],
+          ['Users',      2],
+          ['Likes',  2],
+          ['Querries', 2],
+        ]);
+
+        var options = {
+          title: 'My Daily Activities'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+
+
       
 </body>
 </html>
