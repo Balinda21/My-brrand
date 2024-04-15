@@ -489,8 +489,6 @@ app.post('/register', async (req: Request, res: Response) => {
 
       // Hashing password
       const hashedPassword = await bcrypt.hash(password, 10);
-
-      // Create a new user document with hashed password and default isAdmin value
       const newUser = new UserModel({ name, email, password: hashedPassword, });
 
       // Save the new user to the database
