@@ -15,12 +15,14 @@ import Joi from 'joi';
 import ContactModel, { Contact as ContactModelInterface } from './models/contact.js'; 
 import CommentModel from './models/comments.js';
 import { checkUser } from './middeware/isAdmin.auth.js';
+import cors from 'cors';
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors());
 
 
 

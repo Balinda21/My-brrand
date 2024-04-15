@@ -15,10 +15,12 @@ import Joi from 'joi';
 import ContactModel from './models/contact.js';
 import CommentModel from './models/comments.js';
 import { checkUser } from './middeware/isAdmin.auth.js';
+import cors from 'cors';
 dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors());
 const options = {
     definition: {
         openapi: "3.0.0",
@@ -415,7 +417,6 @@ app.post('/register', async (req, res) => {
         const { name, email, password } = req.body;
         // Hashing password
         const hashedPassword = await bcrypt.hash(password, 10);
-        // Create a new user document with hashed password and default isAdmin value
         const newUser = new UserModel({ name, email, password: hashedPassword, });
         // Save the new user to the database
         await newUser.save();
