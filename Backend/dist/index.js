@@ -889,9 +889,9 @@ app.get('/api/get/contacts', async (_req, res) => {
 // Define endpoint to add a new comment
 app.post('/api/comments', async (req, res) => {
     try {
-        const { text } = req.body;
+        const { text, name } = req.body;
         // Create a new comment document
-        const newComment = new CommentModel({ text });
+        const newComment = new CommentModel({ text, name });
         // Save the new comment to the database
         await newComment.save();
         // Send response

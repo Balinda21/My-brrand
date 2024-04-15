@@ -179,104 +179,97 @@
         </div>
     </footer>
     <script>
-   document.addEventListener("DOMContentLoaded", async function() {
-    const loginButton = document.getElementById("login-btn");
-    const commentForm = document.querySelector(".comment-form");
-    const commentsContainer = document.querySelector(".comments");
-    const contentImage= document.getElementById("contentImage");
-    const contentBlog= document.getElementById("contentBlog");
-
-
-    const id = window.location.pathname.split('/').pop()
-     
-    fetch(`/api/singleblogs/${id}`, {credentials: "include"})
-    .then(res => res.json())
-    .then(data => {
+        document.addEventListener("DOMContentLoaded", async function() {
+            const commentForm = document.querySelector(".comment-form");
+            const commentsContainer = document.querySelector(".comments");
+            const contentImage = document.getElementById("contentImage");
+            const contentBlog = document.getElementById("contentBlog");
     
-        if(data){
-            contentImage.innerHTML = `
-            <img src="${data.picture}" alt="Blog Image">
-            `
-            contentBlog.innerHTML = `
-            <h2>${data.title}</h2>
-                    <span class="card-date">${data.date}</span>
-                    <p>${data.description} </p> 
-            `
-        }
-
-
-    })
-    .catch(error => console.log(error))
+            const id = window.location.pathname.split('/').pop();
     
-
-    // Function to fetch comments and display them
-    async function fetchAndDisplayComments() {
-        try {
-            const response = await fetch("/api/get/comments/");
-            if (response.ok) {
-                const comments = await response.json();
-                commentsContainer.innerHTML = ""; // Clear previous comments
-                comments.forEach(comment => {
-                    const commentElement = document.createElement("div");
-                    commentElement.classList.add("comment");
-                    commentElement.textContent = comment.text;
-                    commentsContainer.appendChild(commentElement);
-                });
-            } else {
-                console.error("Failed to fetch comments.");
-            }
-        } catch (error) {
-            console.error("Error fetching comments:", error);
-        }
-    }
-
-
-        // Fetch and display comments when the page loads
-        await fetchAndDisplayComments();
-
-        commentForm.addEventListener("submit", async function(event) {
-            event.preventDefault(); // Prevent default form submission
-
-            const commentText = commentForm.querySelector("textarea").value.trim();
-
-            let token
-
-            if (commentText !== "") {
-                if (!token) {
-                    try {
-                        const response = await fetch("/api/comments", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "Authorization": `Bearer ${token}`
-                            },
-                            body: JSON.stringify({
-                                text: commentText
-                            })
+            fetch(`/api/singleblogs/${id}`, {credentials: "include"})
+            .then(res => res.json())
+            .then(data => {
+                if(data){
+                    contentImage.innerHTML = `<img src="${data.picture}" alt="Blog Image">`;
+                    contentBlog.innerHTML = `<h2>${data.title}</h2><span class="card-date">${data.date}</span><p>${data.description}</p>`;
+                }
+            })
+            .catch(error => console.log(error));
+    
+            // Function to fetch comments and display them
+            async function fetchAndDisplayComments() {
+                try {
+                    const response = await fetch("/api/get/comments/");
+                    if (response.ok) {
+                        const comments = await response.json();
+                        commentsContainer.innerHTML = ""; // Clear previous comments
+                        comments.forEach(comment => {
+                            const commentElement = document.createElement("div");
+                            commentElement.classList.add("comment");
+                            commentElement.innerHTML = `
+                                <h5>Name: ${comment.name}</h5>
+                                <p>${comment.text}</p>
+                            `;
+                            commentsContainer.appendChild(commentElement);
                         });
-
-                        if (response.ok) {
-                            alert("Comment submitted successfully!");
-                            commentForm.reset(); 
-                            await fetchAndDisplayComments();
+                    } else {
+                        console.error("Failed to fetch comments.");
+                    }
+                } catch (error) {
+                    console.error("Error fetching comments:", error);
+                }
+            }
+    
+            // Fetch and display comments when the page loads
+            await fetchAndDisplayComments();
+    
+            commentForm.addEventListener("submit", async function(event) {
+                event.preventDefault(); // Prevent default form submission
+    
+                const commentText = commentForm.querySelector("textarea").value.trim();
+    
+                if (commentText !== "") {
+                    try {
+                        const response = await fetch("/api/user", { credentials: "include" });
+                        const user = await response.json();
+                        console.log(user)
+                        if (user && user.name) {
+                            const response = await fetch("/api/comments", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({
+                                    text: commentText,
+                                    name: user.name 
+                                }),
+                                credentials: "include"
+                            });
+    
+                            if (response.ok) {
+                                alert("Comment submitted successfully!");
+                                commentForm.reset(); 
+                                await fetchAndDisplayComments();
+                            } else {
+                                alert("Failed to submit comment. Please try again later.");
+                            }
                         } else {
-                            alert("Failed to submit comment. Please try again later.");
+                            alert("Please log in to submit a comment.");
+                            window.location.href = "/loggin";
                         }
                     } catch (error) {
                         console.error("Error submitting comment:", error);
                         alert("An error occurred. Please try again later.");
                     }
                 } else {
-                    alert("Please log in first to submit a comment.");
-                    window.location.href = "/loggin";
+                    alert("Please enter a valid comment.");
                 }
-            } else {
-                alert("Please enter a valid comment.");
-            }
+            });
         });
+    </script>
     
-});
-</script>
+    
 <!-- likes  -->
 <script>
     let likeCount = 0;

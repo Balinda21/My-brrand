@@ -24,6 +24,7 @@ app.use(cookieParser());
 
 
 
+
 const options = {
   definition: {
     openapi: "3.0.0",
@@ -999,10 +1000,11 @@ app.get('/api/get/contacts', async (_req: Request, res: Response) => {
 // Define endpoint to add a new comment
 app.post('/api/comments',  async  (req: Request, res: Response) => {
   try {
-    const { text } = req.body;
+    const { text, name } = req.body;
+  
 
     // Create a new comment document
-    const newComment = new CommentModel({ text });
+    const newComment = new CommentModel({ text, name });
 
     // Save the new comment to the database
     await newComment.save();
